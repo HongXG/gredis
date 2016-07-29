@@ -79,10 +79,23 @@ clean:
 
 dep:
 	$(CC) -MM $(SOURCE)
+	
+PWD=$(shell pwd)
+GREDIS_VERSION=@PACKAGE_VERSION@
+rpm:clean
+	rm -rf /tmp/gRedis-$(GREDIS_VERSION);\
+	rm -f /tmp/gRedis-$(GREDIS_VERSION).tar.gz;\
+	cp -r $(PWD) /tmp/gRedis-$(GREDIS_VERSION);\
+	make -C /tmp/gRedis-$(GREDIS_VERSION) clean;\
+	cd /tmp/;\
+	tar -zcvf gRedis-$(GREDIS_VERSION).tar.gz --exclude=.* --exclude=*.tar.gz gRedis-$(GREDIS_VERSION);\
+	cd -;
+	mv -f /tmp/gRedis-$(GREDIS_VERSION).tar.gz /root/rpmbuild/SOURCES/;\
+	rpmbuild -ba gRedis.spec;
 
 # Installation related variables and target
 PREFIX?=/usr/local
-INSTALL_INCLUDE_PATH= $(PREFIX)/include/gredis
+INSTALL_INCLUDE_PATH= $(PREFIX)/include/gRedis
 INSTALL_LIBRARY_PATH= $(PREFIX)/lib
 
 ifeq ($(uname_S),SunOS)
@@ -93,7 +106,7 @@ INSTALL?= cp -a
 
 install: $(DYLIBNAME) $(STLIBNAME)
 	mkdir -p $(INSTALL_INCLUDE_PATH) $(INSTALL_LIBRARY_PATH)
-	$(INSTALL) src/gRedisClient.h $(INSTALL_INCLUDE_PATH)
+	$(INSTALL) src/*.h $(INSTALL_INCLUDE_PATH)
 	$(INSTALL) $(DYLIBNAME) $(INSTALL_LIBRARY_PATH)/$(DYLIB_MINOR_NAME)
 	cd $(INSTALL_LIBRARY_PATH) && ln -sf $(DYLIB_MINOR_NAME) $(DYLIB_MAJOR_NAME)
 	cd $(INSTALL_LIBRARY_PATH) && ln -sf $(DYLIB_MAJOR_NAME) $(DYLIBNAME)
