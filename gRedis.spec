@@ -1,11 +1,11 @@
-Name: gRedis
+Name: gredis
 Version: 1.0.1
 Release: 1
 
-Summary: gRedis, C++ redis library
+Summary: gredis, C++ redis library
 License: GPL
 Group: Development/Libraries
-Vendor: gRedis project 
+Vendor: gredis project 
 Packager: HongXG <1277206558@qq.com>
 
 Source: %name-%version.tar.gz
@@ -14,16 +14,16 @@ Prefix: %_prefix
 BuildRoot: %_tmppath/%name-%version-root
 
 %description
-gRedis is a simple to use C++ Redis API providing thread-safe, cluster, flexible.
+gredis is a simple to use C++ Redis API providing thread-safe, cluster, flexible.
 It is modeled after the Java log4j API.
 
 %package devel
-Summary: gRedis headers, static libraries
+Summary: gredis headers, static libraries
 Group: Development/Libraries
 Requires: hiredis
 
 %description devel
-gRedis is a simple to use C++ Redis API providing thread-safe, cluster, flexible.
+gredis is a simple to use C++ Redis API providing thread-safe, cluster, flexible.
 It is modeled after the Java log4j API.
 
 %prep
@@ -40,8 +40,8 @@ rm -rf $RPM_BUILD_ROOT
 
 make PREFIX=$RPM_BUILD_ROOT%{prefix} install
 mkdir -p $RPM_BUILD_ROOT%{prefix}/include/
-#cp -rp include/gRedis $RPM_BUILD_ROOT%{prefix}/include/
-#rm -f $RPM_BUILD_ROOT%{prefix}/include/gRedis/*.h
+#cp -rp include/gredis $RPM_BUILD_ROOT%{prefix}/include/
+#rm -f $RPM_BUILD_ROOT%{prefix}/include/gredis/*.h
 find %{buildroot} -name .git -type d -exec find '{}' -delete \;
 find %{buildroot} -name .svn -type d -exec find '{}' -delete \;
 find %{buildroot} -name "*.in" -delete
@@ -57,6 +57,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %defattr(-,root,root,755)
-%prefix/include/gRedis/*.h
+%prefix/include/gredis/*.h
 %attr(644,root,root) 
 %prefix/lib/*.a

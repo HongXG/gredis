@@ -82,19 +82,19 @@ dep:
 PWD=$(shell pwd)
 GREDIS_VERSION=@PACKAGE_VERSION@
 rpm:clean
-	rm -rf /tmp/gRedis-$(GREDIS_VERSION);\
-	rm -f /tmp/gRedis-$(GREDIS_VERSION).tar.gz;\
-	cp -r $(PWD) /tmp/gRedis-$(GREDIS_VERSION);\
-	make -C /tmp/gRedis-$(GREDIS_VERSION) clean;\
+	rm -rf /tmp/gredis-$(GREDIS_VERSION);\
+	rm -f /tmp/gredis-$(GREDIS_VERSION).tar.gz;\
+	cp -r $(PWD) /tmp/gredis-$(GREDIS_VERSION);\
+	make -C /tmp/gredis-$(GREDIS_VERSION) clean;\
 	cd /tmp/;\
-	tar -zcvf gRedis-$(GREDIS_VERSION).tar.gz --exclude=.* --exclude=*.tar.gz gRedis-$(GREDIS_VERSION);\
+	tar -zcvf gredis-$(GREDIS_VERSION).tar.gz --exclude=.* --exclude=*.tar.gz gredis-$(GREDIS_VERSION);\
 	cd -;
-	mv -f /tmp/gRedis-$(GREDIS_VERSION).tar.gz /root/rpmbuild/SOURCES/;\
-	rpmbuild -ba gRedis.spec;
+	mv -f /tmp/gredis-$(GREDIS_VERSION).tar.gz /root/rpmbuild/SOURCES/;\
+	rpmbuild -ba gredis.spec;
 
 # Installation related variables and target
 PREFIX?=/usr/local
-INSTALL_INCLUDE_PATH= $(PREFIX)/include/gRedis
+INSTALL_INCLUDE_PATH= $(PREFIX)/include/gredis
 INSTALL_LIBRARY_PATH= $(PREFIX)/lib
 
 ifeq ($(uname_S),SunOS)
