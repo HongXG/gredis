@@ -1,20 +1,20 @@
 # gredis Makefile
 
-SOURCE = $(wildcard $(addprefix  ./src/*, .cpp))
+SOURCE = $(wildcard $(addprefix ./src/*, .cpp))
 OBJ := $(patsubst %cpp, %o, $(SOURCE))
 
-EXAMPLESOURCE = $(wildcard $(addprefix  ./examples/*, .cpp))
+EXAMPLESOURCE = $(wildcard $(addprefix ./examples/*, .cpp))
 EXAMPLEOBJ := $(patsubst %cpp, %o, $(EXAMPLESOURCE))
 EXAMPLES := $(basename $(EXAMPLEOBJ))
 
-TESTSOURCE = $(wildcard $(addprefix  ./tests/*, .cpp))
+TESTSOURCE = $(wildcard $(addprefix ./tests/*, .cpp))
 TESTOBJ := $(patsubst %cpp, %o, $(TESTSOURCE))
 TESTS := $(basename $(TESTOBJ))
 
 LIBNAME=libgredis
 
 LIBRARYS_DYNIC = hiredis pthread
-LIBRARYS_STATIC = gredis
+LIBRARYS_STATIC = gredis gtest
 
 LINK_LIBRARYS = -Wl,-dn $(addprefix -l, $(LIBRARYS_STATIC)) -Wl,-dy $(addprefix -l, $(LIBRARYS_DYNIC))
 
@@ -60,6 +60,9 @@ $(DYLIBNAME): $(OBJ)
 $(STLIBNAME): $(OBJ)
 	$(STLIB_MAKE_CMD) $(OBJ)
 
+%: %.cpp $(STLIBNAME)
+	$(CC) -o $@ $< $(REAL_CFLAGS) $(REAL_LDFLAGS) -L. $(LINK_LIBRARYS)
+	
 %.o: %.cpp
 	$(CC) $(REAL_CFLAGS) -c $< -o $@
 
@@ -67,12 +70,8 @@ dynamic: $(DYLIBNAME)
 static: $(STLIBNAME)
 
 examples:all $(EXAMPLES)
-%: %.cpp $(STLIBNAME)
-	$(CC) -o $@ $< $(REAL_CFLAGS) $(REAL_LDFLAGS) -I./src -L./ $(LINK_LIBRARYS)
 
 tests:all $(TESTS)
-%: %.cpp $(STLIBNAME)
-	$(CC) -o $@ $< $(REAL_CFLAGS) $(REAL_LDFLAGS)  -I./src -L. $(LINK_LIBRARYS) -lgtest
 
 clean:
 	rm -f $(OBJ) $(EXAMPLEOBJ) $(TESTOBJ) $(DYLIBNAME) $(STLIBNAME) $(TESTS) $(EXAMPLES)
