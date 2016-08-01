@@ -71,12 +71,13 @@ void RedisIndex::SetErrInfo(const redisReply* const reply) {
     }
 }
 
-bool RedisIndex::SetErrString(const char *info, int /*len*/) {
+bool RedisIndex::SetErrString(const char *info, int len) {
     if (NULL == info) {
         return false;
     }
-    memset(mStrerr, 0, sizeof(mStrerr));
-    strncpy(mStrerr, info, sizeof(mStrerr)-1);
+    const int sizeBuffer = sizeof(mStrerr);
+    memset(mStrerr, 0, sizeBuffer);
+    strncpy(mStrerr, info, sizeBuffer<=len ? (sizeBuffer-1) : len);
     return true;
 }
 

@@ -48,8 +48,6 @@ bool RedisCmd::ConnectRedisGroup( const RedisNode* arrayRedisNode, const unsigne
 }
 
 bool RedisCmd::command_bool(const char *cmd, ...) {
-    bool bRet = false;
-
     va_list args;
     va_start(args, cmd);
     RedisReply reply = commandv(cmd, args);
@@ -57,77 +55,59 @@ bool RedisCmd::command_bool(const char *cmd, ...) {
 
     if (RedisReply::CheckReply(reply)) {
     	redisReply*& pReply = reply;
-        if (REDIS_REPLY_STATUS==pReply->type) {
-            bRet = true;
-        } else {
-            bRet = (pReply->integer == 1) ? true : false;
+        if (REDIS_REPLY_STATUS==pReply->type || 1==pReply->integer) {
+            return true;
         }
-    } else {
-        SetErrInfo(reply);
     }
 
-    return bRet;
+    SetErrInfo(reply);
+    return false;
 }
 
 bool RedisCmd::command_status(const char* cmd, ...) {
-    bool bRet = false;
-
     va_list args;
     va_start(args, cmd);
     RedisReply reply = commandv(cmd, args);
     va_end(args);
 
     if (RedisReply::CheckReply(reply)) {
-        bRet = true;
-    } else {
-        SetErrInfo(reply);
+    	return true;
     }
 
-    return bRet;
+    SetErrInfo(reply);
+    return false;
 }
 
 bool RedisCmd::command_integer(int64_t &retval, const char* cmd, ...) {
-    bool bRet = false;
-
     va_list args;
     va_start(args, cmd);
     RedisReply reply = commandv(cmd, args);
     va_end(args);
     if (RedisReply::CheckReply(reply)) {
         retval = ((redisReply*&)reply)->integer;
-        bRet = true;
-    } else {
-        SetErrInfo(reply);
+        return true;
     }
 
-    return bRet;
+    SetErrInfo(reply);
+    return false;
 }
 
 bool RedisCmd::command_string(string &data, const char* cmd, ...) {
-    bool bRet = false;
-
     va_list args;
     va_start(args, cmd);
-    std::string target;
-    RedisReply reply(NULL);
-    if (RedisComm::formatCommand(target, cmd, args)) {
-    	reply = command(target.c_str());
-    }
+    RedisReply reply = commandv(cmd, args);
     va_end(args);
     if (RedisReply::CheckReply(reply)) {
     	redisReply*& pReply = reply;
         data.assign(pReply->str, pReply->len);
-        bRet = true;
-    } else {
-        SetErrInfo(reply);
+        return true;
     }
 
-    return bRet;
+    SetErrInfo(reply);
+    return false;
 }
 
 bool RedisCmd::command_list(VALUES &vValue, const char* cmd, ...) {
-    bool bRet = false;
-
     va_list args;
     va_start(args, cmd);
     RedisReply reply = commandv(cmd, args);
@@ -137,17 +117,14 @@ bool RedisCmd::command_list(VALUES &vValue, const char* cmd, ...) {
         for (size_t uiIndex = 0; uiIndex<pReply->elements; ++uiIndex) {
             vValue.push_back(string(pReply->element[uiIndex]->str, pReply->element[uiIndex]->len));
         }
-        bRet  = true;
-    } else {
-        SetErrInfo(reply);
+        return true;
     }
 
-    return bRet;
+    SetErrInfo(reply);
+    return false;
 }
 
 bool RedisCmd::command_array( ArrayReply& array,  const char* cmd, ...){
-    bool bRet = false;
-
     va_list args;
     va_start(args, cmd);
     RedisReply reply = commandv(cmd, args);
@@ -160,17 +137,14 @@ bool RedisCmd::command_array( ArrayReply& array,  const char* cmd, ...){
             item.str.assign(pReply->element[uiIndex]->str, pReply->element[uiIndex]->len);
             array.push_back(item);
         }
-        bRet  = true;
-    } else {
-        SetErrInfo(reply);
+        return true;
     }
 
-    return bRet;
+    SetErrInfo(reply);
+    return false;
 }
 
 bool RedisCmd::commandargv_bool(const VDATA& vData) {
-    bool bRet = false;
-
     vector<const char *> argv( vData.size() );
     vector<size_t> argvlen( vData.size() );
     unsigned int j = 0;
@@ -181,17 +155,16 @@ bool RedisCmd::commandargv_bool(const VDATA& vData) {
     RedisReply reply = commandArgv(argv.size(), &(argv[0]), &(argvlen[0]));
     if (RedisReply::CheckReply(reply)) {
     	redisReply*& pReply = reply;
-        bRet = (pReply->integer==1)?true:false;
-    } else {
-        SetErrInfo(reply);
+    	if (1 == pReply->integer) {
+        	return true;
+    	}
     }
 
-    return bRet;
+    SetErrInfo(reply);
+    return false;
 }
 
 bool RedisCmd::commandargv_status(const VDATA& vData) {
-    bool bRet = false;
-
     vector<const char *> argv( vData.size() );
     vector<size_t> argvlen( vData.size() );
     unsigned int j = 0;
@@ -201,17 +174,14 @@ bool RedisCmd::commandargv_status(const VDATA& vData) {
 
     RedisReply reply = commandArgv(argv.size(), &(argv[0]), &(argvlen[0]));
     if (RedisReply::CheckReply(reply)) {
-        bRet = true;
-    } else {
-        SetErrInfo(reply);
+    	return true;
     }
 
-    return bRet;
+    SetErrInfo(reply);
+    return false;
 }
 
 bool RedisCmd::commandargv_array(const VDATA& vDataIn, ArrayReply& array){
-    bool bRet = false;
-
     vector<const char*> argv( vDataIn.size() );
     vector<size_t> argvlen( vDataIn.size() );
     unsigned int j = 0;
@@ -228,17 +198,14 @@ bool RedisCmd::commandargv_array(const VDATA& vDataIn, ArrayReply& array){
             item.str.assign(pReply->element[uiIndex]->str, pReply->element[uiIndex]->len);
             array.push_back(item);
         }
-        bRet  = true;
-    } else {
-        SetErrInfo(reply);
+        return true;
     }
 
-    return bRet;
+    SetErrInfo(reply);
+    return false;
 }
 
 bool RedisCmd::commandargv_array(const VDATA& vDataIn, VALUES& array){
-    bool bRet = false;
-
     vector<const char*> argv( vDataIn.size() );
     vector<size_t> argvlen( vDataIn.size() );
     unsigned int j = 0;
@@ -253,17 +220,14 @@ bool RedisCmd::commandargv_array(const VDATA& vDataIn, VALUES& array){
             string str(pReply->element[uiIndex]->str, pReply->element[uiIndex]->len);
             array.push_back(str);
         }
-        bRet  = true;
-    } else {
-        SetErrInfo(reply);
+        return true;
     }
 
-    return bRet;
+    SetErrInfo(reply);
+    return false;
 }
 
 bool RedisCmd::commandargv_integer(const VDATA& vDataIn, int64_t& retval){
-    bool bRet = false;
-
     vector<const char*> argv( vDataIn.size() );
     vector<size_t> argvlen( vDataIn.size() );
     unsigned int j = 0;
@@ -275,12 +239,11 @@ bool RedisCmd::commandargv_integer(const VDATA& vDataIn, int64_t& retval){
     if (RedisReply::CheckReply(reply)) {
     	redisReply*& pReply = reply;
         retval = pReply->integer;
-        bRet  = true;
-    } else {
-        SetErrInfo(reply);
+        return true;
     }
 
-    return bRet;
+    SetErrInfo(reply);
+    return false;
 }
 
 redisReply* RedisCmd::command(const char *format, ...)

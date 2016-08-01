@@ -68,7 +68,7 @@ public:
 
     static void addParam(VDATA& vDes, const VDATA& vSrc);
     static bool formatCommand(std::string& target, const char *format, ...);
-    static bool formatCommand(std::string& target, const char *format, va_list ap);
+    static bool formatCommandv(std::string& target, const char *format, va_list ap);
 };
 
 }

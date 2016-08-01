@@ -13,12 +13,12 @@ using namespace gRedis;
 
 RedisNode arrayRedisNode[]=
 {
-	RedisNode(Node("10.8.0.1", 6379),  "", 1, 5, MASTER, 0),
-    RedisNode(Node("10.8.0.1", 26379), "", 1, 5, MASTER, 1),
-    RedisNode(Node("10.8.0.1", 46379), "", 1, 5, MASTER, 2),
-	RedisNode(Node("10.8.0.1", 6380),  "", 1, 5, SLAVE, 0),
-    RedisNode(Node("10.8.0.1", 26380), "", 1, 5, SLAVE, 1),
-    RedisNode(Node("10.8.0.1", 46380), "", 1, 5, SLAVE, 2)
+	RedisNode(Node("127.0.0.1", 6379), "", 1, 5, MASTER, 0),
+	RedisNode(Node("127.0.0.1", 6380), "", 1, 5, SLAVE,  0),
+    RedisNode(Node("127.0.0.1", 6579), "", 1, 5, MASTER, 1),
+    RedisNode(Node("127.0.0.1", 6580), "", 1, 5, SLAVE,  1),
+    RedisNode(Node("127.0.0.1", 6779), "", 1, 5, MASTER, 2),
+    RedisNode(Node("127.0.0.1", 6780), "", 1, 5, SLAVE,  2)
 };
 
 int main(int /*argc*/, char **/*argv*/) {

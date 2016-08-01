@@ -35,7 +35,7 @@ bool RedisComm::formatCommand(std::string& target, const char *format, ...)
 {
     va_list ap;
     va_start(ap,format);
-    const bool result = formatCommand(target, format, ap);
+    const bool result = formatCommandv(target, format, ap);
     va_end(ap);
     return result;
 }
@@ -43,7 +43,7 @@ bool RedisComm::formatCommand(std::string& target, const char *format, ...)
 /**
  * 格式化命令
  */
-bool RedisComm::formatCommand(std::string& target, const char *format, va_list ap)
+bool RedisComm::formatCommandv(std::string& target, const char *format, va_list ap)
 {
     char value[USHRT_MAX] = {'\0'};
     if (0 < vsnprintf(value, sizeof(value)-1, format, ap)) {

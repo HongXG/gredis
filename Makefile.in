@@ -24,7 +24,7 @@ GREDIS_MINOR=11
 # Fallback to gcc when $CC is not in $PATH.
 CC:=g++
 OPTIMIZATION?=-O0
-WARNINGS=-Wall -W -Wwrite-strings
+WARNINGS=-W -Wall -Werror -Wno-deprecated  -Wwrite-strings
 DEBUG?= -g -ggdb
 REAL_CFLAGS=$(OPTIMIZATION) -fPIC $(CFLAGS) $(WARNINGS) $(DEBUG) $(ARCH)
 REAL_LDFLAGS=$(LDFLAGS) $(ARCH)

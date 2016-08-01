@@ -31,7 +31,6 @@ bool RedisClient::append( const Key& key,  const Value& value) {
 }
 
 bool RedisClient::set( const Key& key,  const Value& value) {
-    RedisIndex::SetKey(key);
     VDATA vCmdData;
     vCmdData.push_back("SET");
     vCmdData.push_back(key);
