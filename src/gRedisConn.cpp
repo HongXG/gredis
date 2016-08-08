@@ -62,7 +62,7 @@ bool RedisConn::auth()
     return bRet;
 }
 
-bool RedisConn::RedisConnect()
+bool RedisConn::Connect()
 {
     bool bRet = false;
     if (NULL != mCtx) {
@@ -81,19 +81,19 @@ bool RedisConn::RedisConnect()
     return bRet;
 }
 
-bool RedisConn::RedisReConnect()
+bool RedisConn::ReConnect()
 {
     if (NULL == mCtx) {
         return false;
     }
 
     bool bRet = false;
-    redisContext *tmp_ctx = ConnectWithTimeout();
-    if (NULL == tmp_ctx) {
+    redisContext* context = ConnectWithTimeout();
+    if (NULL == context) {
         bRet = false;
     } else {
         redisFree(mCtx);
-        mCtx = tmp_ctx;
+        mCtx = context;
         bRet = auth();
     }
 

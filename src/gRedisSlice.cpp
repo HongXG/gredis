@@ -43,7 +43,7 @@ bool RedisSlice::ConnectRedisNodes(const RedisNode redisNode)
 			}
 
 			pRedisconn->Init(redisNode);
-			if (pRedisconn->RedisConnect()) {
+			if (pRedisconn->Connect()) {
 				mRedisConnPool.push_back(pRedisconn);
 				mRedisStatus = REDISDB_WORKING;
 			} else {
@@ -81,10 +81,10 @@ void RedisSlice::FreeConn(RedisConn *redisConn)
     }
 }
 
-void RedisSlice::CloseConnPool()
+void RedisSlice::CloseConn()
 {
 	GREDISLOCK(mRedisLock);
-	for (RedisConnIter pIter = mRedisConnPool.begin();
+	for (std::list<RedisConn*>::iterator pIter = mRedisConnPool.begin();
 			mRedisConnPool.end() != pIter;
 			++pIter)
 	{
@@ -99,17 +99,17 @@ void RedisSlice::CloseConnPool()
     mRedisStatus = REDISDB_DEAD;
 }
 
-void RedisSlice::ConnPoolPing()
+void RedisSlice::Ping()
 {
 	GREDISLOCK(mRedisLock);
-	for (RedisConnIter pIter = mRedisConnPool.begin();
+	for (std::list<RedisConn*>::iterator pIter = mRedisConnPool.begin();
 			mRedisConnPool.end() != pIter;
 			++pIter)
 	{
 		RedisConn*& pRedisConn = *pIter;
 		if (NULL!=pRedisConn && !pRedisConn->Ping())
 		{
-			pRedisConn->RedisReConnect();
+			pRedisConn->ReConnect();
 		}
 	}
 }

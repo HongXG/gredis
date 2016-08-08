@@ -30,13 +30,13 @@ public:
 
     void Init(const RedisNode redisNode);
 
-    bool RedisConnect();
-    bool RedisReConnect();
+    bool Connect();
+    bool ReConnect();
     bool Ping();
 
     redisContext* getCtx() const        { return mCtx; }
     RedisNode     getRedisNode() const  { return mRedisNode; }
-    bool          GetConnstatus() const { return mConnStatus; }
+    bool          getConnstatus() const { return mConnStatus; }
 
 private:
     bool auth();
@@ -48,9 +48,6 @@ private:
     RedisNode     mRedisNode;     // redis node info
     bool          mConnStatus;    // redis connection status
 };
-
-typedef std::list<RedisConn*> RedisConnPool;
-typedef std::list<RedisConn*>::iterator RedisConnIter;
 
 }
 

@@ -32,18 +32,18 @@ public:
 
     RedisConn* GetConn();
     void FreeConn(RedisConn *redisConn);
-    void CloseConnPool();
-    void ConnPoolPing();
+    void CloseConn();
+    void Ping();
     RedisStatus GetRedisStatus() const;
 
     Node GetNode() const;
 
 private:
-    RedisConnPool   mRedisConnPool;
-    RedisLock       mRedisLock;
+    std::list<RedisConn*> mRedisConnPool;
+    RedisLock             mRedisLock;
 
-    RedisStatus     mRedisStatus;        // redis DB status
-    RedisNode       mRedisNode;
+    RedisStatus           mRedisStatus;        // redis DB status
+    RedisNode             mRedisNode;
 };
 
 }

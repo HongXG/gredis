@@ -52,7 +52,7 @@ void RedisGroup::ClosePool()
 			++pIter)
 	{
 		if (NULL != pIter->second) {
-			pIter->second->CloseConnPool();
+			pIter->second->CloseConn();
 			DELETE(pIter->second);
 		}
 	}
@@ -66,7 +66,7 @@ void RedisGroup::KeepAlive()
 			++pIter)
 	{
 		if (NULL != pIter->second) {
-			pIter->second->ConnPoolPing();
+			pIter->second->Ping();
 		}
 	}
 }
