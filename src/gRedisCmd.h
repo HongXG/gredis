@@ -21,9 +21,9 @@
 #include "gRedisPool.h"
 #include "gRedisIndex.h"
 
-typedef std::vector<Key>        KEYS;
-typedef KEYS                    FILEDS;
-typedef std::vector<Value>      VALUES;
+typedef std::vector<Key>        Keys;
+typedef Keys                    FILEDS;
+typedef std::vector<Value>      Values;
 
 typedef std::set<std::string>        SETDATA;
 
@@ -83,14 +83,14 @@ protected:
     bool command_status(const char* cmd, ...);
     bool command_integer(int64_t &intval, const char* cmd, ...);
     bool command_string(std::string &data, const char* cmd, ...);
-    bool command_list(VALUES &vValue, const char* cmd, ...);
+    bool command_list(Values &vValue, const char* cmd, ...);
     bool command_array(ArrayReply& array, const char* cmd, ...);
 
 protected:
     bool commandargv_bool(const VDATA& vData);
     bool commandargv_status(const VDATA& vData);
     bool commandargv_array(const VDATA& vDataIn, ArrayReply& array);
-    bool commandargv_array(const VDATA& vDataIn, VALUES& array);
+    bool commandargv_array(const VDATA& vDataIn, Values& array);
     bool commandargv_integer(const VDATA& vDataIn, int64_t& retval);
 
 protected:

@@ -87,20 +87,20 @@ public:
 
 
     /* HDEL         */  bool hdel(   const Key& key, const std::string& field, int64_t& num);
-                        bool hdel(   const Key& key, const KEYS& vfiled, int64_t& num);
+                        bool hdel(   const Key& key, const Keys& vfiled, int64_t& num);
     /* HEXISTS      */  bool hexist( const Key& key, const std::string& field);
     /* HGET         */  bool hget(   const Key& key, const std::string& field, Value& value);
     /* HGETALL      */  bool hgetall(const Key& key, ArrayReply& array);
     /* HINCRBY      */  bool hincrby(const Key& key, const std::string& field, int64_t increment ,int64_t& value);
     /* HINCRBYFLOAT */  bool hincrbyfloat( const Key& key, const std::string& field, const float increment, float& value);
-    /* HKEYS        */  bool hkeys(  const Key& key, KEYS& keys);
+    /* HKEYS        */  bool hkeys(  const Key& key, Keys& keys);
     /* HLEN         */  bool hlen(   const Key& key, int64_t& count);
-    /* HMGET        */  bool hmget(  const Key& key, const KEYS& field, ArrayReply& array);
+    /* HMGET        */  bool hmget(  const Key& key, const Keys& field, ArrayReply& array);
     /* HMSET        */  bool hmset(  const Key& key, const VDATA& vData);
     /* HSCAN        */                                      
     /* HSET         */  bool hset(   const Key& key, const std::string& field, const Value& value, int64_t& retval);
     /* HSETNX       */  bool hsetnx( const Key& key, const std::string& field, const Value& value);
-    /* HVALS        */  bool hvals(  const Key& key, VALUES& values);
+    /* HVALS        */  bool hvals(  const Key& key, Values& values);
 
     /* BLPOP        */  
     /* BRPOP        */  
@@ -109,7 +109,7 @@ public:
     /* LINSERT      */  bool linsert( const Key& key, LMODEL mod, const std::string& pivot, const Value& value, int64_t& retval);
     /* LLEN         */  bool llen(    const Key& key, int64_t& len);
     /* LPOP         */  bool lpop(    const Key& key, Value& value);
-    /* LPUSH        */  bool lpush(   const Key& key, const VALUES& vValue, int64_t& length);
+    /* LPUSH        */  bool lpush(   const Key& key, const Values& vValue, int64_t& length);
     /* LPUSHX       */  bool lpushx(  const Key& key, const Value& value, int64_t& length);
     /* LRANGE       */  bool lrange(  const Key& key, int64_t start, int64_t end, ArrayReply& array);
     /* LREM         */  bool lrem(    const Key& key,  int count, const Value& value, int64_t num);
@@ -117,39 +117,39 @@ public:
     /* LTRIM        */  bool ltrim(   const Key& key,  int start, int end);
     /* RPOP         */  bool rpop(    const Key& key, Value& value);
     /* RPOPLPUSH    */  bool rpoplpush(const std::string& key_src, const std::string& key_dest, Value& value);
-    /* RPUSH        */  bool rpush(   const Key& key, const VALUES& vValue, int64_t& length);
+    /* RPUSH        */  bool rpush(   const Key& key, const Values& vValue, int64_t& length);
     /* RPUSHX       */  bool rpushx(  const Key& key, const Value& value, int64_t& length);
 
 
 
-    /* SADD         */  bool sadd(       const Key& key, const VALUES& vValue, int64_t& count);
+    /* SADD         */  bool sadd(       const Key& key, const Values& vValue, int64_t& count);
     /* SCARD        */  bool scard(const Key& key, int64_t& count);
     /* SDIFF        */  //bool sdiff(const DBIArray& dbi,       const KEYS& vKkey, VALUES& vValue);
     /* SDIFFSTORE   */  //bool sdiffstore( const KEY& destinationkey, const DBIArray& vdbi, const KEYS& vkey, int64_t& count);
     /* SINTER       */  //bool sinter(const DBIArray& dbi,      const KEYS& vkey, VALUES& vValue);
     /* SINTERSTORE  */  //bool sinterstore(const KEY& destinationkey, const DBIArray& vdbi, const KEYS& vkey, int64_t& count);
     /* SISMEMBER    */  bool sismember(  const Key& key,   const Value& member);
-    /* SMEMBERS     */  bool smembers(    const Key& key,  VALUES& vValue);
+    /* SMEMBERS     */  bool smembers(    const Key& key,  Values& vValue);
     /* SMOVE        */  bool smove(      const std::string& srckey, const Key& deskey,  const Value& member);
     /* SPOP         */  bool spop(       const Key& key, Value& member);
-    /* SRANDMEMBER  */  bool srandmember(const Key& key, VALUES& vmember, int num=0);
-    /* SREM         */  bool srem(       const Key& key, const VALUES& vmembers, int64_t& count);
+    /* SRANDMEMBER  */  bool srandmember(const Key& key, Values& vmember, int num=0);
+    /* SREM         */  bool srem(       const Key& key, const Values& vmembers, int64_t& count);
     /* SSCAN        */  
     /* SUNION       */  //bool sunion(const DBIArray& dbi,      const KEYS& vkey, VALUES& vValue);
     /* SUNIONSTORE  */  //bool sunionstore(const KEY& deskey, const DBIArray& vdbi, const KEYS& vkey, int64_t& count);
 
-    /* ZADD             */  bool zadd(   const std::string& deskey,   const VALUES& vValues, int64_t& count);
+    /* ZADD             */  bool zadd(   const std::string& deskey,   const Values& vValues, int64_t& count);
     /* ZCARD            */  bool zscrad( const Key& key, int64_t& num);
     /* ZCOUNT           */
     /* ZINCRBY          */  bool zincrby(const Key& key, const double &increment, const std::string& member, Value& value );
     /* ZINTERSTORE      */  
-    /* ZRANGE           */  bool zrange( const Key& key, int start, int end, VALUES& vValues, bool withscore=false);
+    /* ZRANGE           */  bool zrange( const Key& key, int start, int end, Values& vValues, bool withscore=false);
     /* ZRANGEBYSCORE    */  
     /* ZRANK            */  bool zrank(  const Key& key, const std::string& member, int64_t &rank);
-    /* ZREM             */  bool zrem(   const Key& key, const VALUES& vmembers, int64_t &num);
+    /* ZREM             */  bool zrem(   const Key& key, const Values& vmembers, int64_t &num);
     /* ZREMRANGEBYRANK  */  bool zremrangebyrank( const Key& key, int start, int stop, int64_t& num);
     /* ZREMRANGEBYSCORE */  
-    /* ZREVRANGE        */  bool zrevrange( const Key& key, int start, int end, VALUES& vValues, bool withscore=false);
+    /* ZREVRANGE        */  bool zrevrange( const Key& key, int start, int end, Values& vValues, bool withscore=false);
     /* ZREVRANGEBYSCORE */  
     /* ZREVRANK         */  bool zrevrank( const Key& key, const std::string &member, int64_t& rank);
     /* ZSCAN            */  

@@ -105,7 +105,7 @@ bool RedisCmd::command_string(string &data, const char* cmd, ...) {
     return false;
 }
 
-bool RedisCmd::command_list(VALUES &vValue, const char* cmd, ...) {
+bool RedisCmd::command_list(Values &vValue, const char* cmd, ...) {
     va_list args;
     va_start(args, cmd);
     RedisReply reply = commandv(cmd, args);
@@ -203,7 +203,7 @@ bool RedisCmd::commandargv_array(const VDATA& vDataIn, ArrayReply& array){
     return false;
 }
 
-bool RedisCmd::commandargv_array(const VDATA& vDataIn, VALUES& array){
+bool RedisCmd::commandargv_array(const VDATA& vDataIn, Values& array){
     vector<const char*> argv( vDataIn.size() );
     vector<size_t> argvlen( vDataIn.size() );
     unsigned int j = 0;

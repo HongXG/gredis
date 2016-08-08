@@ -49,7 +49,7 @@ bool RedisClient::lpop( const Key& key, string& value){
     return command_string(value, "LPOP %s", key.c_str());
 }
 
-bool RedisClient::lpush( const Key& key, const VALUES& vValue, int64_t& length){
+bool RedisClient::lpush( const Key& key, const Values& vValue, int64_t& length){
     if (0==key.length()) {
         return false;
     }
@@ -116,7 +116,7 @@ bool RedisClient::rpoplpush( const string& key_src, const string& key_dest, stri
     return command_string(value, "RPOPLPUSH %s %s", key_src.c_str(), key_dest.c_str());
 }
 
-bool RedisClient::rpush( const Key& key, const VALUES& vValue, int64_t& length){
+bool RedisClient::rpush( const Key& key, const Values& vValue, int64_t& length){
     if (0==key.length()) {
         return false;
     }

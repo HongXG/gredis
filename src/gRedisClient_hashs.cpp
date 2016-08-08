@@ -21,7 +21,7 @@ bool RedisClient::hdel(const Key& key, const string& field, int64_t& count) {
     return command_integer(count, "HDEL %s %s", key.c_str(), field.c_str());
 }
 
-bool RedisClient::hdel(const Key& key, const KEYS& vfiled, int64_t& count) {
+bool RedisClient::hdel(const Key& key, const Keys& vfiled, int64_t& count) {
     RedisIndex::SetKey(key);
     VDATA vCmdData;
     vCmdData.push_back("HDEL");
@@ -70,7 +70,7 @@ bool RedisClient::hincrbyfloat(const Key& key, const string& field, float increm
     return bRet;
 }
 
-bool RedisClient::hkeys(const Key& key, KEYS& keys){
+bool RedisClient::hkeys(const Key& key, Keys& keys){
     RedisIndex::SetKey(key);
     RedisIndex::SetRole(SLAVE);
     return command_list(keys, "HKEYS %s", key.c_str());
@@ -82,7 +82,7 @@ bool RedisClient::hlen(const Key& key, int64_t& count){
     return command_integer(count, "HLEN %s", key.c_str());
 }
 
-bool RedisClient::hmget(const Key& key, const KEYS& field, ArrayReply& array){
+bool RedisClient::hmget(const Key& key, const Keys& field, ArrayReply& array){
     RedisIndex::SetKey(key);
     VDATA vCmdData;
     vCmdData.push_back("HMGET");
@@ -114,7 +114,7 @@ bool RedisClient::hsetnx(const Key& key, const string& field, const Value& value
     return command_bool("HSETNX %s %s %s", key.c_str(), field.c_str(), value.c_str());
 }
 
-bool RedisClient::hvals(const Key& key, VALUES& values) {
+bool RedisClient::hvals(const Key& key, Values& values) {
     RedisIndex::SetKey(key);
     RedisIndex::SetRole(SLAVE);
     return command_list(values, "HVALS %s", key.c_str());

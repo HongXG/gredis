@@ -12,7 +12,7 @@
 namespace gRedis
 {
 
-bool RedisClient::zadd(const Key& key,   const VALUES& vValues, int64_t& count){
+bool RedisClient::zadd(const Key& key,   const Values& vValues, int64_t& count){
     VDATA vCmdData;
     vCmdData.push_back("ZADD");
     vCmdData.push_back(key);
@@ -41,7 +41,7 @@ bool RedisClient::zincrby(const Key& key, const double &increment, const string&
     return command_string(value, "ZINCRBY %s %f %s", key.c_str(), increment, member.c_str());
 }
 
-bool RedisClient::zrange(const Key& key, int start, int end, VALUES& vValues, bool withscore) {
+bool RedisClient::zrange(const Key& key, int start, int end, Values& vValues, bool withscore) {
     if (0==key.length()) {
         return false;
     }
@@ -62,7 +62,7 @@ bool RedisClient::zrank(const Key& key, const string& member, int64_t &rank) {
     return command_integer(rank, "ZRANK %s %s", key.c_str(), member.c_str());
 }
 
-bool RedisClient::zrem(      const Key& key, const VALUES& vmembers, int64_t &count) {
+bool RedisClient::zrem(      const Key& key, const Values& vmembers, int64_t &count) {
     VDATA vCmdData;
     vCmdData.push_back("ZREM");
     vCmdData.push_back(key);
@@ -82,7 +82,7 @@ bool RedisClient::zremrangebyrank(const Key& key, int start, int stop, int64_t& 
     return command_integer(count, "ZREMRANGEBYRANK %s %d %d", key.c_str(), start, stop);
 }
 
-bool RedisClient::zrevrange(const Key& key, int start, int end, VALUES& vValues, bool withscore) {
+bool RedisClient::zrevrange(const Key& key, int start, int end, Values& vValues, bool withscore) {
     if (0==key.length()) {
         return false;
     }

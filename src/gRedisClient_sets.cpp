@@ -11,7 +11,7 @@
 namespace gRedis
 {
 
-bool RedisClient::sadd(   const Key& key, const VALUES& vValue, int64_t& count){
+bool RedisClient::sadd(   const Key& key, const Values& vValue, int64_t& count){
     VDATA vCmdData;
     vCmdData.push_back("SADD");
     vCmdData.push_back(key);
@@ -29,13 +29,13 @@ bool RedisClient::scard(   const Key& key, int64_t& count){
 }
 
 /*
-bool RedisClient::sdiff(const DBIArray& vdbi,     const KEYS& vkey, VALUES& sValue){
+bool RedisClient::sdiff(const DBIArray& vdbi,     const KEYS& vkey, Values& sValue){
 	size_t size = vkey.size();
     if (0 == size) {
         return false;
     }
-    VALUES *setData = new VALUES[size];
-    VALUES::iterator endpos;
+    Values *setData = new Values[size];
+    Values::iterator endpos;
 
     DBIArray::const_iterator iter_dbi = vdbi.begin();
     KEYS::const_iterator     iter_key = vkey.begin();
@@ -59,17 +59,17 @@ bool RedisClient::sdiff(const DBIArray& vdbi,     const KEYS& vkey, VALUES& sVal
 }
 
 bool RedisClient::sdiffstore(const KEY& destinationkey,  const DBIArray& vdbi, const KEYS& vkey, int64_t& count){
-    VALUES sValue;
+    Values sValue;
     if (!sdiff(vdbi, vkey, sValue)) {
        return false;
     }
     return sadd(redisIndex, destinationkey, sValue, count);
 }
 
-bool RedisClient::sinter(const DBIArray& vdbi, const KEYS& vkey, VALUES& sValue){
+bool RedisClient::sinter(const DBIArray& vdbi, const KEYS& vkey, Values& sValue){
     size_t size = vkey.size();
-    VALUES *setData = new VALUES[size];
-    VALUES::iterator endpos;
+    Values *setData = new Values[size];
+    Values::iterator endpos;
 
     DBIArray::const_iterator iter_dbi = vdbi.begin();
     KEYS::const_iterator     iter_key = vkey.begin();
@@ -94,7 +94,7 @@ bool RedisClient::sinter(const DBIArray& vdbi, const KEYS& vkey, VALUES& sValue)
 }
 
 bool RedisClient::sinterstore(const RedisIndex& redisIndex, const KEY& destinationkey, const DBIArray& vdbi, const KEYS& vkey, int64_t& count){
-    VALUES sValue;
+    Values sValue;
     if (!sinter(vdbi, vkey, sValue)) {
         return false;
     }
@@ -110,7 +110,7 @@ bool RedisClient::sismember(const Key& key,   const Value& member){
     return command_bool("SISMEMBER %s %s", key.c_str(), member.c_str());
 }
 
-bool RedisClient::smembers(const Key& key, VALUES& vValue){
+bool RedisClient::smembers(const Key& key, Values& vValue){
     if (0==key.length()) {
         return false;
     }
@@ -137,7 +137,7 @@ bool RedisClient::spop(const Key& key, Value& member){
     return command_string(member, "SPOP %s", key.c_str());
 }
 
-bool RedisClient::srandmember(const Key& key, VALUES& members, int count){
+bool RedisClient::srandmember(const Key& key, Values& members, int count){
     if (0==key.length()) {
         return false;
     }
@@ -149,7 +149,7 @@ bool RedisClient::srandmember(const Key& key, VALUES& members, int count){
     return command_list(members, "SRANDMEMBER %s %d", key.c_str(), count);
 }
 
-bool RedisClient::srem(const Key& key, const VALUES& vmembers, int64_t& count){
+bool RedisClient::srem(const Key& key, const Values& vmembers, int64_t& count){
     if (0==key.length()) {
         return false;
     }
@@ -163,10 +163,10 @@ bool RedisClient::srem(const Key& key, const VALUES& vmembers, int64_t& count){
 }
 /*
 
-bool RedisClient::sunion(const DBIArray& vdbi,     const KEYS& vkey, VALUES& sValue){
+bool RedisClient::sunion(const DBIArray& vdbi,     const KEYS& vkey, Values& sValue){
     size_t size = vkey.size();
-    VALUES *setData = new VALUES[size];
-    VALUES::iterator endpos;
+    Values *setData = new Values[size];
+    Values::iterator endpos;
 
     DBIArray::const_iterator iter_dbi = vdbi.begin();
     KEYS::const_iterator     iter_key = vkey.begin();
@@ -190,7 +190,7 @@ bool RedisClient::sunion(const DBIArray& vdbi,     const KEYS& vkey, VALUES& sVa
 }
 
 bool RedisClient::sunionstore(const Key& deskey, const DBIArray& vdbi, const KEYS& vkey, int64_t& count){
-    VALUES sValue;
+    Values sValue;
     if (!redisIndex.mFlag) { SetRole(MASTER, true); }
     if (!sunion(vdbi, vkey, sValue)) {
         return false;

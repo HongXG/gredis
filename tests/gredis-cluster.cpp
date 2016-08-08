@@ -24,7 +24,7 @@ public:
 TEST(CTest, test_zadd)
 {
     std::string strkey="test:sorted:key";
-    VALUES vVal;
+    Values vVal;
     int64_t retVal=0;
     int64_t scores = 168;
     vVal.push_back(toString(scores));
@@ -96,7 +96,7 @@ TEST(CTest, test_hset)
 
 TEST(CTest, test_lpush)
 {
-    VALUES vVal;
+    Values vVal;
     vVal.push_back(toString(time(NULL)));
     int64_t count = 0;
     EXPECT_EQ(true, redisClient.lpush("list_test", vVal, count));
@@ -122,7 +122,7 @@ TEST(CTest, test_lpop)
 
 TEST(CTest, test_rpush)
 {
-    VALUES vVal;
+    Values vVal;
     vVal.push_back(toString(time(NULL)));
     int64_t count = 0;
     EXPECT_EQ(true, redisClient.rpush("list_test", vVal, count));
