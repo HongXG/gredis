@@ -30,7 +30,7 @@ void RedisPool::Keepalive() {
 	}
 }
 
-bool RedisPool::ConnectRedisDB(const RedisNode redisNode){
+bool RedisPool::Connect(const RedisNode redisNode){
     return mMapRedisGroup[redisNode.mGroupID].ConnectRedis(redisNode);
 }
 

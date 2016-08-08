@@ -28,7 +28,6 @@ public:
     /* AUTH        */  /* nonsupport */
     /* ECHO        */  bool echo(const std::string& str, Value &value);
     /* PING        */  /* nonsupport */
-    /* QUIT        */  void quit();
     /* SELECT      */  /* nonsupport */
 
     //                 Commands operating on std::string values

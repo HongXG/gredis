@@ -39,9 +39,7 @@ bool RedisCmd::ConnectRedisGroup( const RedisNode* arrayRedisNode, const unsigne
         if (1 < uiCount) {
         	return false;
         }
-        if (!RedisPool::ConnectRedisDB(arrayRedisNode[uiIndexOut])) {
-            return false;
-        }
+        RedisPool::Connect(arrayRedisNode[uiIndexOut]);
     }
 
     return true;

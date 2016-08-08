@@ -12,11 +12,6 @@
 namespace gRedis
 {
 
-void RedisClient::quit(){
-	Release();
-}
-
-
 bool RedisClient::echo(const string& str, Value& value)
 {
 	if (0==str.length()) {

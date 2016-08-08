@@ -31,7 +31,7 @@ public:
     virtual ~RedisPool();
 
     unsigned int getMemberSize(const GroupID groupID);
-    bool ConnectRedisDB(const RedisNode redisNode);
+    bool Connect(const RedisNode redisNode);
     
     RedisConn* GetConnection(const Node node, const unsigned int slot);
     RedisConn* GetConnection(const Key& key, const Role role=MASTER);
