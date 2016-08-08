@@ -31,7 +31,6 @@ public:
     void Init(const RedisNode redisNode);
 
     bool Connect();
-    bool ReConnect();
     bool Ping();
 
     redisContext* getCtx() const        { return mCtx; }

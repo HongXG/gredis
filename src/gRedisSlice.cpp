@@ -109,7 +109,7 @@ void RedisSlice::Ping()
 		RedisConn*& pRedisConn = *pIter;
 		if (NULL!=pRedisConn && !pRedisConn->Ping())
 		{
-			pRedisConn->ReConnect();
+			pRedisConn->Connect();
 		}
 	}
 }

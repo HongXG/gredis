@@ -81,26 +81,6 @@ bool RedisConn::Connect()
     return bRet;
 }
 
-bool RedisConn::ReConnect()
-{
-    if (NULL == mCtx) {
-        return false;
-    }
-
-    bool bRet = false;
-    redisContext* context = ConnectWithTimeout();
-    if (NULL == context) {
-        bRet = false;
-    } else {
-        redisFree(mCtx);
-        mCtx = context;
-        bRet = auth();
-    }
-
-    mConnStatus = bRet;
-    return bRet;
-}
-
 bool RedisConn::Ping()
 {
     redisReply *reply = static_cast<redisReply *>(redisCommand(mCtx, "PING"));
