@@ -91,7 +91,7 @@ void RedisSlice::CloseConn()
 		RedisConn*& pRedisConn = *pIter;
 		if (NULL != pRedisConn)
 		{
-			redisFree(pRedisConn->getCtx());
+			pRedisConn->Close();
 			DELETE(pRedisConn);
 		}
 	}

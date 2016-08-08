@@ -31,15 +31,27 @@ public:
     void Init(const RedisNode redisNode);
 
     bool Connect();
+    void Close();
     bool Ping();
 
-    redisContext* getCtx() const        { return mCtx; }
     RedisNode     getRedisNode() const  { return mRedisNode; }
     bool          getConnstatus() const { return mConnStatus; }
 
+public:
+    /**
+     * 调用redisCommand
+     */
+    redisReply* command(const char *format, ...);
+    redisReply* commandv(const char *format, va_list ap);
+    /**
+     * 调用redisCommandArgv
+     */
+    redisReply* commandArgv(int argc, const char **argv, const size_t *argvlen);
+
 private:
     bool auth();
-    redisContext* ConnectWithTimeout();
+    static void Close(redisContext*& context);
+    static redisContext* ConnectWithTimeout(const RedisNode redisNode);
 
 private:
     // redis connector context

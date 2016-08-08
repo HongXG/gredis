@@ -310,7 +310,7 @@ redisReply* RedisCmd::commandArgv(int argc, const char **argv, const size_t *arg
 redisReply* RedisCmd::commandv(RedisConn* const pRedisConn, const char *format, va_list ap)
 {
 	assert(NULL != pRedisConn);
-    redisReply *reply = static_cast<redisReply *>(redisvCommand(pRedisConn->getCtx(), format, ap));
+    redisReply *reply = pRedisConn->commandv(format, ap);
     RedisPool::FreeConnection(pRedisConn);
     return reply;
 }
@@ -321,7 +321,7 @@ redisReply* RedisCmd::commandv(RedisConn* const pRedisConn, const char *format, 
 redisReply* RedisCmd::commandArgv(RedisConn* const pRedisConn, int argc, const char **argv, const size_t *argvlen)
 {
 	assert(NULL != pRedisConn);
-    redisReply *reply = static_cast<redisReply *>(redisCommandArgv(pRedisConn->getCtx(), argc, argv, argvlen));
+    redisReply *reply = pRedisConn->commandArgv(argc, argv, argvlen);
     RedisPool::FreeConnection(pRedisConn);
     return reply;
 }

@@ -24,6 +24,8 @@ public:
 	//拷贝构造函数
 	RedisReply(const RedisReply& reply);
 
+	bool empty() const;
+
 	RedisReply& operator=(redisReply* const reply);
 
 	operator redisReply*&();

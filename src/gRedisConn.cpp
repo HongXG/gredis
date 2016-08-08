@@ -7,6 +7,7 @@
  */
 
 #include "gRedisConn.h"
+#include "gRedisReply.h"
 
 #include <string.h>
 
@@ -24,78 +25,108 @@ RedisConn::~RedisConn()
 
 }
 
-redisContext * RedisConn::ConnectWithTimeout()
+void RedisConn::Init(const RedisNode redisNode)
 {
-    struct timeval timeoutVal;
-    timeoutVal.tv_sec = mRedisNode.mTimeout;
-    timeoutVal.tv_usec = 0;
-
-    redisContext *ctx = NULL;
-    ctx = redisConnectWithTimeout(mRedisNode.mNode.mHost.c_str(), mRedisNode.mNode.mPort, timeoutVal);
-    if (NULL == ctx || ctx->err) {
-        if (NULL != ctx) {
-            redisFree(ctx);
-            ctx = NULL;
-        } else {
-
-        }
-    }
-
-    return ctx;
+    mRedisNode = redisNode;
 }
 
 bool RedisConn::auth()
 {
-    bool bRet = false;
-    if (0 == mRedisNode.mPasswd.length()) {
-        bRet = true;
-    } else {
-        redisReply *reply = static_cast<redisReply *>(redisCommand(mCtx, "AUTH %s", mRedisNode.mPasswd.c_str()));
-        if ((NULL == reply) || (strcasecmp(reply->str, "OK") != 0)) {
-            bRet = false;
-        } else {
-            bRet = true;
-        }
-        freeReplyObject(reply);
+    if (!mRedisNode.mPasswd.empty()) {
+        RedisReply reply = command("AUTH %s", mRedisNode.mPasswd.c_str());
+        return RedisReply::CheckReply(reply);
     }
 
-    return bRet;
+    return true;
 }
 
 bool RedisConn::Connect()
 {
-    bool bRet = false;
-    if (NULL != mCtx) {
-        redisFree(mCtx);
-        mCtx = NULL;
-    }
-
-    mCtx = ConnectWithTimeout();
-    if (NULL==mCtx) {
-        bRet = false;
+    Close();
+    mCtx = ConnectWithTimeout(mRedisNode);
+    if (NULL!=mCtx && auth()) {
+    	mConnStatus = true;
+    	return true;
     } else {
-        bRet = auth();
-        mConnStatus = bRet;
+        Close();
+    	return false;
     }
+}
 
-    return bRet;
+void RedisConn::Close()
+{
+	mConnStatus = false;
+	Close(mCtx);
 }
 
 bool RedisConn::Ping()
 {
-    redisReply *reply = static_cast<redisReply *>(redisCommand(mCtx, "PING"));
-    bool bRet = (NULL != reply);
-    mConnStatus = bRet;
-    if(bRet)
-    {
-        freeReplyObject(reply);
-    }
-    return bRet;
+    RedisReply reply = command("PING");
+    mConnStatus = !reply.empty();
+    return mConnStatus;
 }
 
-void RedisConn::Init(const RedisNode redisNode)
+void RedisConn::Close(redisContext*& context)
 {
-    mRedisNode = redisNode;
+    if (NULL != context) {
+        redisFree(context);
+        context = NULL;
+    }
+}
+
+redisContext * RedisConn::ConnectWithTimeout(const RedisNode redisNode)
+{
+    struct timeval timeoutVal;
+    timeoutVal.tv_sec = redisNode.mTimeout;
+    timeoutVal.tv_usec = 0;
+
+    redisContext* context = redisConnectWithTimeout(redisNode.mNode.mHost.c_str(), redisNode.mNode.mPort, timeoutVal);
+    if (NULL!=context && 0==context->err) {
+    	return context;
+    }
+    Close(context);
+    return context;
+}
+
+/**
+ * 调用redisCommand，并自动释放RedisConn链接
+ */
+redisReply* RedisConn::command(const char *format, ...)
+{
+    va_list ap;
+    va_start(ap,format);
+    RedisReply reply(commandv(format, ap), false);
+    va_end(ap);
+    return reply;
+}
+
+redisReply* RedisConn::commandv(const char *format, va_list ap)
+{
+	redisReply* reply = NULL;
+	if (NULL != mCtx)
+	{
+	    reply = static_cast<redisReply *>(redisvCommand(mCtx, format, ap));
+	    if (NULL == reply) {
+	    	Close();
+	    }
+	}
+    return reply;
+}
+
+/**
+ * 调用redisCommandArgv，并自动释放RedisConn链接
+ */
+redisReply* RedisConn::commandArgv(int argc, const char **argv, const size_t *argvlen)
+{
+	redisReply* reply = NULL;
+	if (NULL != mCtx)
+	{
+	    reply = static_cast<redisReply *>(redisCommandArgv(mCtx, argc, argv, argvlen));
+	    if (NULL == reply) {
+	    	Close();
+	    }
+	}
+    return reply;
 }
 
 }

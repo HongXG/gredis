@@ -32,6 +32,11 @@ RedisReply::RedisReply(const RedisReply& reply)
 	mRedisReply = reply.mRedisReply;
 }
 
+bool RedisReply::empty() const
+{
+	return NULL==mRedisReply;
+}
+
 RedisReply& RedisReply::operator=(redisReply* const reply)
 {
 	FreeReply(mRedisReply);
