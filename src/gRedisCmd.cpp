@@ -261,7 +261,8 @@ redisReply* RedisCmd::commandv(const char *format, va_list ap)
         return NULL;
     }
 
-    RedisReply reply(commandv(pRedisConn, format, ap), false);
+    RedisReply reply(pRedisConn->commandv(format, ap), false);
+    RedisPool::FreeConnection(pRedisConn);
     if (!RedisReply::CheckReply(reply)) {
     	Node node;
     	unsigned int slot = 0;
@@ -270,7 +271,8 @@ redisReply* RedisCmd::commandv(const char *format, va_list ap)
 			if (NULL != pRedisConn) {
 				// 将Slot与GroupID的匹配信息进行记录
 				RedisSlot::SetSlotGroup(slot, pRedisConn->getRedisNode().mGroupID);
-			    reply = commandv(pRedisConn, format, ap);
+			    reply = pRedisConn->commandv(format, ap);
+			    RedisPool::FreeConnection(pRedisConn);
 			}
     	}
     }
@@ -285,7 +287,8 @@ redisReply* RedisCmd::commandArgv(int argc, const char **argv, const size_t *arg
         SetErrString(GET_CONNECT_ERROR, ::strlen(GET_CONNECT_ERROR));
         return NULL;
     }
-    RedisReply reply(commandArgv(pRedisConn, argc, argv, argvlen), false);
+    RedisReply reply(pRedisConn->commandArgv(argc, argv, argvlen), false);
+    RedisPool::FreeConnection(pRedisConn);
     if (!RedisReply::CheckReply(reply)) {
     	Node node;
     	unsigned int slot = 0;
@@ -294,33 +297,12 @@ redisReply* RedisCmd::commandArgv(int argc, const char **argv, const size_t *arg
 			if (NULL != pRedisConn) {
 				// 将Slot与GroupID的匹配信息进行记录
 				RedisSlot::SetSlotGroup(slot, pRedisConn->getRedisNode().mGroupID);
-			    reply = commandArgv(pRedisConn, argc, argv, argvlen);
+			    reply = pRedisConn->commandArgv(argc, argv, argvlen);
+			    RedisPool::FreeConnection(pRedisConn);
 			}
     	}
     }
 
-    return reply;
-}
-
-/**
- * 调用redisCommand，并自动释放RedisConn链接
- */
-redisReply* RedisCmd::commandv(RedisConn* const pRedisConn, const char *format, va_list ap)
-{
-	assert(NULL != pRedisConn);
-    redisReply *reply = pRedisConn->commandv(format, ap);
-    RedisPool::FreeConnection(pRedisConn);
-    return reply;
-}
-
-/**
- * 调用redisCommandArgv，并自动释放RedisConn链接
- */
-redisReply* RedisCmd::commandArgv(RedisConn* const pRedisConn, int argc, const char **argv, const size_t *argvlen)
-{
-	assert(NULL != pRedisConn);
-    redisReply *reply = pRedisConn->commandArgv(argc, argv, argvlen);
-    RedisPool::FreeConnection(pRedisConn);
     return reply;
 }
 
