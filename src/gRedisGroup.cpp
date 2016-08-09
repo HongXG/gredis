@@ -40,7 +40,7 @@ bool RedisGroup::ConnectRedis(const RedisNode redisNode)
 		if (MASTER==redisNode.mRole && mNodeMaster.empty()) {
 			mNodeMaster = redisNode.mNode;
 		}
-		return pRedisSlice->ConnectRedisNodes(redisNode);
+		return pRedisSlice->Connect(redisNode);
 	}
 	return false;
 }
@@ -85,16 +85,13 @@ void RedisGroup::FreeConn(RedisConn* redisConn)
 	RedisSlice* const pRedisSlice = GetRedisSlice(redisConn->getRedisNode().mNode);
 	assert(NULL != pRedisSlice);
 	if (NULL != pRedisSlice) {
-		return pRedisSlice->FreeConn(redisConn);
+		pRedisSlice->FreeConn(redisConn);
+		pRedisSlice->Connect();// 检查处于断开连接的通道进行重连
 	}
 }
 
-RedisConn* RedisGroup::GetConn(const Node node, const Role role)
+RedisConn* RedisGroup::GetConn(const Node node)
 {
-    if (SLAVE!=role && MASTER!=role)
-    {
-        return NULL;
-    }
 	RedisSlice* const pRedisSlice = GetRedisSlice(node);
 	if (NULL != pRedisSlice) {
 		return pRedisSlice->GetConn();

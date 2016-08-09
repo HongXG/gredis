@@ -24,7 +24,7 @@ public:
 
 	bool ConnectRedis(const RedisNode redisNode);
 
-    RedisConn* GetConn(const Node node, const Role role);
+    RedisConn* GetConn(const Node node);
 	RedisConn* GetConn(const unsigned int slot, const Role role);
     void FreeConn(RedisConn* redisConn);
     void ClosePool();

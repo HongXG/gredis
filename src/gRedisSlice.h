@@ -28,7 +28,8 @@ public:
 	virtual ~RedisSlice();
 
     // 连到到一个REDIS服务节点
-    bool ConnectRedisNodes(const RedisNode redisNode);
+    bool Connect(const RedisNode redisNode);
+	void Connect();
 
     RedisConn* GetConn();
     void FreeConn(RedisConn *redisConn);

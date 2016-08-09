@@ -23,7 +23,7 @@ RedisSlice::~RedisSlice()
 
 }
 
-bool RedisSlice::ConnectRedisNodes(const RedisNode redisNode)
+bool RedisSlice::Connect(const RedisNode redisNode)
 {
 	mRedisNode.clear();
 
@@ -36,13 +36,13 @@ bool RedisSlice::ConnectRedisNodes(const RedisNode redisNode)
     	mRedisNode = redisNode;
 
 		GREDISLOCK(mRedisLock);
-		for (unsigned int i = 0; i < redisNode.mPoolsize; ++i) {
+		for (unsigned int i = 0; i < mRedisNode.mPoolsize; ++i) {
 			RedisConn *pRedisconn = new RedisConn;
 			if (NULL == pRedisconn) {
 				continue;
 			}
 
-			pRedisconn->Init(redisNode);
+			pRedisconn->Init(mRedisNode);
 			if (pRedisconn->Connect()) {
 				mRedisConnPool.push_back(pRedisconn);
 				mRedisStatus = REDISDB_WORKING;
@@ -56,8 +56,26 @@ bool RedisSlice::ConnectRedisNodes(const RedisNode redisNode)
     } catch (...) {
         return false;
     }
+}
 
-    return false;
+void RedisSlice::Connect()
+{
+	GREDISLOCK(mRedisLock);
+	RedisStatus redisStatus = REDISDB_DEAD;
+	for (std::list<RedisConn*>::iterator pIter = mRedisConnPool.begin();
+			mRedisConnPool.end() != pIter;
+			++pIter)
+	{
+		RedisConn*& pRedisConn = *pIter;
+		if (NULL != pRedisConn)
+		{
+			if (pRedisConn->getConnstatus() || pRedisConn->Connect())
+			{
+				redisStatus = REDISDB_WORKING;
+			}
+		}
+	}
+	mRedisStatus = redisStatus;
 }
 
 RedisConn* RedisSlice::GetConn()
@@ -84,6 +102,7 @@ void RedisSlice::FreeConn(RedisConn *redisConn)
 void RedisSlice::CloseConn()
 {
 	GREDISLOCK(mRedisLock);
+    mRedisStatus = REDISDB_DEAD;
 	for (std::list<RedisConn*>::iterator pIter = mRedisConnPool.begin();
 			mRedisConnPool.end() != pIter;
 			++pIter)
@@ -96,22 +115,26 @@ void RedisSlice::CloseConn()
 		}
 	}
 	mRedisConnPool.clear();
-    mRedisStatus = REDISDB_DEAD;
 }
 
 void RedisSlice::Ping()
 {
 	GREDISLOCK(mRedisLock);
+	RedisStatus redisStatus = REDISDB_DEAD;
 	for (std::list<RedisConn*>::iterator pIter = mRedisConnPool.begin();
 			mRedisConnPool.end() != pIter;
 			++pIter)
 	{
 		RedisConn*& pRedisConn = *pIter;
-		if (NULL!=pRedisConn && !pRedisConn->Ping())
+		if (NULL != pRedisConn)
 		{
-			pRedisConn->Connect();
+			if (pRedisConn->Ping() || pRedisConn->Connect())
+			{
+				redisStatus = REDISDB_WORKING;
+			}
 		}
 	}
+	mRedisStatus = redisStatus;
 }
 
 RedisStatus RedisSlice::GetRedisStatus() const
