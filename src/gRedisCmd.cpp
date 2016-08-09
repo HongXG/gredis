@@ -21,7 +21,7 @@ RedisCmd::~RedisCmd() {
     Release();
 }
 
-bool RedisCmd::ConnectGroup( const RedisNode* arrayRedisNode, const unsigned int arraySize) {
+bool RedisCmd::ConnectGroup(const RedisNode* arrayRedisNode, const unsigned int arraySize) {
     /**
      * 判断IP地址和端口是否重复，重复则返回false
      */
@@ -32,14 +32,15 @@ bool RedisCmd::ConnectGroup( const RedisNode* arrayRedisNode, const unsigned int
         		return false;
         	} else if (arrayRedisNode[uiIndexOut].mGroupID==arrayRedisNode[uiIndexIn].mGroupID) {
         		if (MASTER == arrayRedisNode[uiIndexIn].mRole) {
-        			++uiCount;
+        	        if (1 < (++uiCount)) {
+        	        	return false;
+        	        }
         		}
         	}
         }
-        if (1 < uiCount) {
+        if (!RedisPool::Connect(arrayRedisNode[uiIndexOut])) {
         	return false;
         }
-        RedisPool::Connect(arrayRedisNode[uiIndexOut]);
     }
 
     return true;
@@ -51,7 +52,7 @@ bool RedisCmd::command_bool(const char *cmd, ...) {
     RedisReply reply = commandv(cmd, args);
     va_end(args);
 
-    if (RedisReply::CheckReply(reply)) {
+    if (reply.CheckReply()) {
     	redisReply*& pReply = reply;
         if (REDIS_REPLY_STATUS==pReply->type || 1==pReply->integer) {
             return true;
@@ -68,7 +69,7 @@ bool RedisCmd::command_status(const char* cmd, ...) {
     RedisReply reply = commandv(cmd, args);
     va_end(args);
 
-    if (RedisReply::CheckReply(reply)) {
+    if (reply.CheckReply()) {
     	return true;
     }
 
@@ -81,7 +82,7 @@ bool RedisCmd::command_integer(int64_t &retval, const char* cmd, ...) {
     va_start(args, cmd);
     RedisReply reply = commandv(cmd, args);
     va_end(args);
-    if (RedisReply::CheckReply(reply)) {
+    if (reply.CheckReply()) {
         retval = ((redisReply*&)reply)->integer;
         return true;
     }
@@ -95,7 +96,7 @@ bool RedisCmd::command_string(string &data, const char* cmd, ...) {
     va_start(args, cmd);
     RedisReply reply = commandv(cmd, args);
     va_end(args);
-    if (RedisReply::CheckReply(reply)) {
+    if (reply.CheckReply()) {
     	redisReply*& pReply = reply;
         data.assign(pReply->str, pReply->len);
         return true;
@@ -110,7 +111,7 @@ bool RedisCmd::command_list(Values &vValue, const char* cmd, ...) {
     va_start(args, cmd);
     RedisReply reply = commandv(cmd, args);
     va_end(args);
-    if (RedisReply::CheckReply(reply)) {
+    if (reply.CheckReply()) {
     	redisReply*& pReply = reply;
         for (size_t uiIndex = 0; uiIndex<pReply->elements; ++uiIndex) {
             vValue.push_back(string(pReply->element[uiIndex]->str, pReply->element[uiIndex]->len));
@@ -127,7 +128,7 @@ bool RedisCmd::command_array( ArrayReply& array,  const char* cmd, ...){
     va_start(args, cmd);
     RedisReply reply = commandv(cmd, args);
     va_end(args);
-    if (RedisReply::CheckReply(reply)) {
+    if (reply.CheckReply()) {
     	redisReply*& pReply = reply;
         for (size_t uiIndex=0; uiIndex<pReply->elements; ++uiIndex) {
             DataItem item;
@@ -151,7 +152,7 @@ bool RedisCmd::commandargv_bool(const VDATA& vData) {
     }
 
     RedisReply reply = commandArgv(argv.size(), &(argv[0]), &(argvlen[0]));
-    if (RedisReply::CheckReply(reply)) {
+    if (reply.CheckReply()) {
     	redisReply*& pReply = reply;
     	if (1 == pReply->integer) {
         	return true;
@@ -171,7 +172,7 @@ bool RedisCmd::commandargv_status(const VDATA& vData) {
     }
 
     RedisReply reply = commandArgv(argv.size(), &(argv[0]), &(argvlen[0]));
-    if (RedisReply::CheckReply(reply)) {
+    if (reply.CheckReply()) {
     	return true;
     }
 
@@ -188,7 +189,7 @@ bool RedisCmd::commandargv_array(const VDATA& vDataIn, ArrayReply& array){
     }
 
     RedisReply reply = commandArgv(argv.size(), &(argv[0]), &(argvlen[0]));
-    if (RedisReply::CheckReply(reply)) {
+    if (reply.CheckReply()) {
     	redisReply*& pReply = reply;
         for (size_t uiIndex=0; uiIndex<pReply->elements; ++uiIndex) {
             DataItem item;
@@ -212,7 +213,7 @@ bool RedisCmd::commandargv_array(const VDATA& vDataIn, Values& array){
     }
 
     RedisReply reply = commandArgv(argv.size(), &(argv[0]), &(argvlen[0]));
-    if (RedisReply::CheckReply(reply)) {
+    if (reply.CheckReply()) {
     	redisReply*& pReply = reply;
         for (size_t uiIndex=0; uiIndex<pReply->elements; ++uiIndex) {
             string str(pReply->element[uiIndex]->str, pReply->element[uiIndex]->len);
@@ -234,7 +235,7 @@ bool RedisCmd::commandargv_integer(const VDATA& vDataIn, int64_t& retval){
     }
 
     RedisReply reply = commandArgv(argv.size(), &(argv[0]), &(argvlen[0]));
-    if (RedisReply::CheckReply(reply)) {
+    if (reply.CheckReply()) {
     	redisReply*& pReply = reply;
         retval = pReply->integer;
         return true;
@@ -255,24 +256,31 @@ redisReply* RedisCmd::command(const char *format, ...)
 
 redisReply* RedisCmd::commandv(const char *format, va_list ap)
 {
-    RedisConn *pRedisConn = RedisPool::GetConnection(RedisIndex::mKey, RedisIndex::mRole);
-    if (NULL == pRedisConn) {
+    RedisConn* pRedisConnFirst = RedisPool::GetConnection(RedisIndex::mKey, RedisIndex::mRole);
+    if (NULL == pRedisConnFirst) {
         SetErrString(GET_CONNECT_ERROR, ::strlen(GET_CONNECT_ERROR));
         return NULL;
     }
-
-    RedisReply reply(pRedisConn->commandv(format, ap), false);
-    RedisPool::FreeConnection(pRedisConn);
-    if (!RedisReply::CheckReply(reply)) {
+    RedisReply reply(pRedisConnFirst->commandv(format, ap), false);
+    const RedisNode redisNode = pRedisConnFirst->getRedisNode();
+    RedisPool::FreeConnection(pRedisConnFirst);
+    if (!reply.CheckReply()) {
+    	if (reply.empty()) {
+    		RedisConn* pRedisConnSecond = RedisPool::GetConnection(redisNode.mGroupID);
+    		if (NULL != pRedisConnSecond) {
+    			reply = pRedisConnSecond->commandv(format, ap);
+    		    RedisPool::FreeConnection(pRedisConnSecond);
+    		}
+    	}
     	Node node;
     	unsigned int slot = 0;
     	if (RedisReply::ExistCluster(reply, node, slot)) {
-			RedisConn* const pRedisConn = RedisPool::GetConnection(node, slot);
-			if (NULL != pRedisConn) {
+			RedisConn* pRedisConnThree = RedisPool::GetConnection(node, slot);
+			if (NULL != pRedisConnThree) {
 				// 将Slot与GroupID的匹配信息进行记录
-				RedisSlot::SetSlotGroup(slot, pRedisConn->getRedisNode().mGroupID);
-			    reply = pRedisConn->commandv(format, ap);
-			    RedisPool::FreeConnection(pRedisConn);
+				RedisSlot::SetSlotGroup(slot, pRedisConnThree->getRedisNode().mGroupID);
+			    reply = pRedisConnThree->commandv(format, ap);
+			    RedisPool::FreeConnection(pRedisConnThree);
 			}
     	}
     }
@@ -282,23 +290,31 @@ redisReply* RedisCmd::commandv(const char *format, va_list ap)
 
 redisReply* RedisCmd::commandArgv(int argc, const char **argv, const size_t *argvlen)
 {
-    RedisConn *pRedisConn = RedisPool::GetConnection(RedisIndex::mKey, RedisIndex::mRole);
-    if (NULL == pRedisConn) {
+    RedisConn* pRedisConnFirst = RedisPool::GetConnection(RedisIndex::mKey, RedisIndex::mRole);
+    if (NULL == pRedisConnFirst) {
         SetErrString(GET_CONNECT_ERROR, ::strlen(GET_CONNECT_ERROR));
         return NULL;
     }
-    RedisReply reply(pRedisConn->commandArgv(argc, argv, argvlen), false);
-    RedisPool::FreeConnection(pRedisConn);
-    if (!RedisReply::CheckReply(reply)) {
+    RedisReply reply(pRedisConnFirst->commandArgv(argc, argv, argvlen), false);
+    const RedisNode redisNode = pRedisConnFirst->getRedisNode();
+    RedisPool::FreeConnection(pRedisConnFirst);
+    if (!reply.CheckReply()) {
+    	if (reply.empty()) {
+    		RedisConn* pRedisConnSecond = RedisPool::GetConnection(redisNode.mGroupID);
+    		if (NULL != pRedisConnSecond) {
+    			reply = pRedisConnSecond->commandArgv(argc, argv, argvlen);
+    		    RedisPool::FreeConnection(pRedisConnSecond);
+    		}
+    	}
     	Node node;
     	unsigned int slot = 0;
     	if (RedisReply::ExistCluster(reply, node, slot)) {
-			RedisConn* const pRedisConn = RedisPool::GetConnection(node, slot);
-			if (NULL != pRedisConn) {
+			RedisConn* pRedisConnThree = RedisPool::GetConnection(node, slot);
+			if (NULL != pRedisConnThree) {
 				// 将Slot与GroupID的匹配信息进行记录
-				RedisSlot::SetSlotGroup(slot, pRedisConn->getRedisNode().mGroupID);
-			    reply = pRedisConn->commandArgv(argc, argv, argvlen);
-			    RedisPool::FreeConnection(pRedisConn);
+				RedisSlot::SetSlotGroup(slot, pRedisConnThree->getRedisNode().mGroupID);
+			    reply = pRedisConnThree->commandArgv(argc, argv, argvlen);
+			    RedisPool::FreeConnection(pRedisConnThree);
 			}
     	}
     }

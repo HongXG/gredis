@@ -32,7 +32,7 @@ public:
 	void Connect();
 
     RedisConn* GetConn();
-    void FreeConn(RedisConn *redisConn);
+    void FreeConn(RedisConn* redisConn);
     void CloseConn();
     void Ping();
     RedisStatus GetRedisStatus() const;

@@ -30,9 +30,12 @@ public:
 
 	operator redisReply*&();
 
+	void Print();
+
     void FreeReply();
     static void FreeReply(redisReply*& reply);
 
+    bool CheckReply();
     static bool CheckReply(const redisReply* const reply);
 
     /**

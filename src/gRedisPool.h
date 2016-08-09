@@ -35,12 +35,14 @@ public:
     
     RedisConn* GetConnection(const Node node, const unsigned int slot);
     RedisConn* GetConnection(const Key& key, const Role role=MASTER);
+    RedisConn* GetConnection(const GroupID groupID);
     void FreeConnection(RedisConn* redisConn);
     
     void Keepalive();
     void Release();
 
 private:
+    RedisLock                     mRedisLock;
     std::map<GroupID, RedisGroup> mMapRedisGroup;
 };
 

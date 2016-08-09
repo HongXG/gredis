@@ -49,6 +49,16 @@ RedisReply::operator redisReply*&()
 	return mRedisReply;
 }
 
+void RedisReply::Print()
+{
+	if (NULL != mRedisReply) {
+		printf("RedisReply:%p  ======>  type:%d  integer:%lld  len:%lu  str:%s\n",
+				mRedisReply, mRedisReply->type, mRedisReply->integer, mRedisReply->len, mRedisReply->str);
+	} else {
+		printf("RedisReply:%p\n", mRedisReply);
+	}
+}
+
 void RedisReply::FreeReply()
 {
 	FreeReply(mRedisReply);
@@ -61,35 +71,27 @@ void RedisReply::FreeReply(redisReply*& reply) {
     }
 }
 
+bool RedisReply::CheckReply()
+{
+	return RedisReply::CheckReply(mRedisReply);
+}
+
 bool RedisReply::CheckReply(const redisReply* const reply) {
     if(NULL==reply) {
         return false;
     }
     switch(reply->type){
-    case REDIS_REPLY_STRING:{
-            return true;
-        }
-    case REDIS_REPLY_ARRAY:{
-        	return true;
-        }
-    case REDIS_REPLY_INTEGER:{
-            return true;
-        }
-    case REDIS_REPLY_NIL:{
-            return false;
-        }
-    case REDIS_REPLY_STATUS:{
-            return (strcasecmp(reply->str,"OK") == 0)?true:false;
-        }
-    case REDIS_REPLY_ERROR:{
-            return false;
-        }
-    default:{
-            return false;
-        }
+    case REDIS_REPLY_STRING:
+    case REDIS_REPLY_ARRAY:
+    case REDIS_REPLY_INTEGER:
+    	return true;
+    case REDIS_REPLY_STATUS:
+        return (0 == strcasecmp(reply->str,"OK"));
+    case REDIS_REPLY_NIL:
+    case REDIS_REPLY_ERROR:
+    default:
+        return false;
     }
-
-    return false;
 }
 
 /**

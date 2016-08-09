@@ -7,6 +7,7 @@
  */
 
 #include <assert.h>
+#include <stdlib.h>
 
 #include "gRedisGroup.h"
 
@@ -15,6 +16,7 @@ namespace gRedis
 
 RedisGroup::RedisGroup()
 {
+	srand(time(NULL));
 }
 
 RedisGroup::~RedisGroup()
@@ -88,6 +90,23 @@ void RedisGroup::FreeConn(RedisConn* redisConn)
 		pRedisSlice->FreeConn(redisConn);
 		pRedisSlice->Connect();// 检查处于断开连接的通道进行重连
 	}
+}
+
+RedisConn* RedisGroup::GetConn()
+{
+	for (std::map<Node, RedisSlice*>::iterator pIter = mMapRedisSlice.begin();
+			mMapRedisSlice.end() != pIter;
+			++pIter)
+	{
+		RedisSlice*& redisSlice = pIter->second;
+		if (NULL != redisSlice) {
+			redisSlice->Ping();
+			if (REDISDB_WORKING == redisSlice->GetRedisStatus()) {
+				return redisSlice->GetConn();
+			}
+		}
+	}
+	return NULL;
 }
 
 RedisConn* RedisGroup::GetConn(const Node node)

@@ -23,6 +23,7 @@ RedisPool::~RedisPool() {
 }
 
 void RedisPool::Keepalive() {
+	GREDISLOCK(mRedisLock);
 	for (std::map<GroupID, RedisGroup>::iterator pIter = mMapRedisGroup.begin();
 			mMapRedisGroup.end() != pIter;
 			++pIter) {
@@ -31,10 +32,12 @@ void RedisPool::Keepalive() {
 }
 
 bool RedisPool::Connect(const RedisNode redisNode){
+	GREDISLOCK(mRedisLock);
     return mMapRedisGroup[redisNode.mGroupID].ConnectRedis(redisNode);
 }
 
 void RedisPool::Release() {
+	GREDISLOCK(mRedisLock);
 	for (std::map<GroupID, RedisGroup>::iterator pIter = mMapRedisGroup.begin();
 			mMapRedisGroup.end() != pIter;
 			++pIter) {
@@ -45,6 +48,7 @@ void RedisPool::Release() {
 }
 
 RedisConn* RedisPool::GetConnection(const Node node, const unsigned int slot){
+	GREDISLOCK(mRedisLock);
 	const GroupID tempGroupID = RedisSlot::GetSlotGroup(slot);
 	std::map<GroupID, RedisGroup>::iterator pIter = mMapRedisGroup.find(tempGroupID);
 	if (mMapRedisGroup.end() != pIter) {
@@ -81,6 +85,7 @@ RedisConn* RedisPool::GetConnection(const Node node, const unsigned int slot){
 
 RedisConn* RedisPool::GetConnection(const Key& key, const Role role/*=MASTER*/)
 {
+	GREDISLOCK(mRedisLock);
 	if (0 >= mMapRedisGroup.size()) {
 		return NULL;
 	}
@@ -100,8 +105,16 @@ RedisConn* RedisPool::GetConnection(const Key& key, const Role role/*=MASTER*/)
     return mMapRedisGroup[groupID].GetConn(uiSlot, roleTmp);
 }
 
-void RedisPool::FreeConnection(RedisConn* redisConn){
+RedisConn* RedisPool::GetConnection(const GroupID groupID)
+{
+	GREDISLOCK(mRedisLock);
+	return mMapRedisGroup[groupID].GetConn();
+}
+
+void RedisPool::FreeConnection(RedisConn* redisConn)
+{
     if (NULL != redisConn) {
+    	GREDISLOCK(mRedisLock);
     	mMapRedisGroup[redisConn->getRedisNode().mGroupID].FreeConn(redisConn);
     }
 }

@@ -61,7 +61,7 @@ bool RedisClient::hincrbyfloat(const Key& key, const string& field, float increm
     bool bRet = false;
 
     RedisReply reply = command("HINCRBYFLOAT %s %s %f", key.c_str(), field.c_str(), increment);
-    if (RedisReply::CheckReply(reply)) {
+    if (reply.CheckReply()) {
     	redisReply*& pReply = reply;
         value = atof(pReply->str);
         bRet = true;

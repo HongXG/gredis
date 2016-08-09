@@ -34,7 +34,7 @@ bool RedisConn::auth()
 {
     if (!mRedisNode.mPasswd.empty()) {
         RedisReply reply = command("AUTH %s", mRedisNode.mPasswd.c_str());
-        return RedisReply::CheckReply(reply);
+        return reply.CheckReply();
     }
 
     return true;
@@ -102,11 +102,11 @@ redisReply* RedisConn::command(const char *format, ...)
 
 redisReply* RedisConn::commandv(const char *format, va_list ap)
 {
-	redisReply* reply = NULL;
+	RedisReply reply(NULL, false);
 	if (NULL != mCtx)
 	{
 	    reply = static_cast<redisReply *>(redisvCommand(mCtx, format, ap));
-	    if (NULL == reply) {
+	    if (reply.empty()) {
 	    	Close();
 	    }
 	}
@@ -118,11 +118,11 @@ redisReply* RedisConn::commandv(const char *format, va_list ap)
  */
 redisReply* RedisConn::commandArgv(int argc, const char **argv, const size_t *argvlen)
 {
-	redisReply* reply = NULL;
+	RedisReply reply(NULL, false);
 	if (NULL != mCtx)
 	{
 	    reply = static_cast<redisReply *>(redisCommandArgv(mCtx, argc, argv, argvlen));
-	    if (NULL == reply) {
+	    if (reply.empty()) {
 	    	Close();
 	    }
 	}

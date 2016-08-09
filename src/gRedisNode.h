@@ -54,6 +54,8 @@ public:
 	bool empty() const;
 	void clear();
 
+	void Print() const;
+
 public:
 	GroupID      mGroupID;
 	Node         mNode;

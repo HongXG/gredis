@@ -39,16 +39,14 @@ bool RedisSlice::Connect(const RedisNode redisNode)
 		for (unsigned int i = 0; i < mRedisNode.mPoolsize; ++i) {
 			RedisConn *pRedisconn = new RedisConn;
 			if (NULL == pRedisconn) {
-				continue;
+		        return false;
 			}
 
 			pRedisconn->Init(mRedisNode);
 			if (pRedisconn->Connect()) {
-				mRedisConnPool.push_back(pRedisconn);
 				mRedisStatus = REDISDB_WORKING;
-			} else {
-				DELETE(pRedisconn);
 			}
+			mRedisConnPool.push_back(pRedisconn);
 		}
 
 		return true;
@@ -91,7 +89,7 @@ RedisConn* RedisSlice::GetConn()
     return pRedisConn;
 }
 
-void RedisSlice::FreeConn(RedisConn *redisConn)
+void RedisSlice::FreeConn(RedisConn* redisConn)
 {
     if (NULL != redisConn) {
     	GREDISLOCK(mRedisLock);

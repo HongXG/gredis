@@ -111,4 +111,10 @@ void RedisNode::clear()
     mRole = SLAVE;
 }
 
+void RedisNode::Print() const
+{
+	printf("mGroupID:%u  mNode(%s:%d)  mPasswd:%s  mPoolsize:%u  mTimeout:%u  mRole:%d\n",
+			mGroupID, mNode.mHost.c_str(), mNode.mPort, mPasswd.c_str(), mPoolsize, mTimeout, mRole);
+}
+
 }
