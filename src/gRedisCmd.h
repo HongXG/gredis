@@ -76,7 +76,7 @@ public:
 	RedisCmd();
 	virtual ~RedisCmd();
 
-    bool ConnectRedisGroup(const RedisNode* arrayRedisNode, const unsigned int arraySize);
+    bool ConnectGroup(const RedisNode* arrayRedisNode, const unsigned int arraySize);
 
 protected:
     bool command_bool(const char* cmd, ...);

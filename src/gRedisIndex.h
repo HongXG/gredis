@@ -16,8 +16,6 @@
 #include "gRedisSlot.h"
 #include "gRedisComm.h"
 
-typedef unsigned int (*HASHFUN)(const char*, const int);
-
 namespace gRedis
 {
 
@@ -27,7 +25,7 @@ public:
 	RedisIndex(const std::string key);
 	virtual ~RedisIndex();
 
-    char *GetErrInfo() {return mStrerr;}
+    char* GetErrInfo() {return mStrerr;}
     void SetIOMaster();
 
 protected:

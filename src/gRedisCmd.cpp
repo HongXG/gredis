@@ -21,7 +21,7 @@ RedisCmd::~RedisCmd() {
     Release();
 }
 
-bool RedisCmd::ConnectRedisGroup( const RedisNode* arrayRedisNode, const unsigned int arraySize) {
+bool RedisCmd::ConnectGroup( const RedisNode* arrayRedisNode, const unsigned int arraySize) {
     /**
      * 判断IP地址和端口是否重复，重复则返回false
      */

@@ -146,7 +146,7 @@ int main(int argc, char **argv)
 	    RedisNode(Node("127.0.0.1", 6780), "", 1, 5, SLAVE,  2)
 	};
 
-    if (!redisClient.ConnectRedisGroup(arrayRedisNode, sizeof(arrayRedisNode)/sizeof(RedisNode))) {
+    if (!redisClient.ConnectGroup(arrayRedisNode, sizeof(arrayRedisNode)/sizeof(RedisNode))) {
         printf("error ConnectRedisGroup \r\n");
         return EXIT_FAILURE;
     }

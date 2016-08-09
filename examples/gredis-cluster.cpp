@@ -24,7 +24,7 @@ RedisNode arrayRedisNode[]=
 int main(int /*argc*/, char **/*argv*/) {
 
     RedisClient redisClient;
-    if (!redisClient.ConnectRedisGroup(arrayRedisNode, sizeof(arrayRedisNode)/sizeof(RedisNode))) {
+    if (!redisClient.ConnectGroup(arrayRedisNode, sizeof(arrayRedisNode)/sizeof(RedisNode))) {
         printf("error ConnectRedisGroup \r\n");
         return EXIT_FAILURE;
     }
