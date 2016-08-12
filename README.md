@@ -39,5 +39,5 @@ sudo make install
 ```
 
 ### Documentation
-!<p>See [examples](https://github.com/HongXG/gredis/tree/master/examples) directory for some examples
-<p>gRedis QQ Group: 130720409
+See [examples](https://github.com/HongXG/gredis/tree/master/examples) directory for some examples
+gRedis QQ Group: 130720409

@@ -37,5 +37,5 @@ sudo make install
 ```
 
 ### 相关文档
-!<p>使用示例 [examples](https://github.com/HongXG/gredis/tree/master/examples) directory for some examples
-<p>gRedis开源社区QQ群: 130720409
+使用示例 [examples](https://github.com/HongXG/gredis/tree/master/examples) directory for some examples
+gRedis开源社区QQ群: 130720409
